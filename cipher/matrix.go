@@ -7,7 +7,18 @@ import (
 
 type Matrix struct {
 	keyword string
-	content [][]string
+	content [5][5]rune
+}
+
+func (m *Matrix) String() string {
+	s := ""
+	for row := 0; row < 5; row++ {
+		for col := 0; col < 5; col++ {
+			s = s + string(m.content[row][col]) + " "
+		}
+		s = s + "\n"
+	}
+	return s
 }
 
 const alphabet = "abcdefghiklmnopqrstuvwxyz"
@@ -17,19 +28,14 @@ func NewMatrix(keyword string) (*Matrix, error) {
 	m := &Matrix{
 		keyword: keyword,
 	}
-	m.content = make([][]string, 5)
-	for i := 0; i < 5; i++ {
-		m.content[i] = make([]string, 5)
-	}
 
 	uniq := ""
-	for i := 0; i < len(keyword); i++ {
-		c := keyword[i : i+1]
-		if c == "j" { // treat "i" and "j" as the same letter
-			c = "i"
+	for _, r := range keyword {
+		if r == 'j' { // treat "i" and "j" as the same letter
+			r = 'i'
 		}
-		if !strings.Contains(uniq, c) {
-			uniq = uniq + keyword[i:i+1]
+		if !strings.Contains(uniq, string(r)) {
+			uniq = uniq + string(r)
 		}
 	}
 	if len(uniq) < minKeywordLen {
@@ -39,21 +45,18 @@ func NewMatrix(keyword string) (*Matrix, error) {
 	remaining := alphabet
 	row := 0
 	col := 0
-	for i := 0; i < len(uniq); i++ {
-		c := uniq[i : i+1]
+	for _, r := range uniq {
+		c := string(r)
 		remaining = strings.Replace(remaining, c, "", -1)
-		fmt.Printf("%d, %d: %s\n", row, col, c)
-		m.content[row][col] = c
+		m.content[row][col] = r
 		col++
 		if col >= 5 {
 			col = 0
 			row++
 		}
 	}
-	for i := 0; i < len(remaining); i++ {
-		c := remaining[i : i+1]
-		fmt.Printf("%d, %d: %s\n", row, col, c)
-		m.content[row][col] = c
+	for _, r := range remaining {
+		m.content[row][col] = r
 		col++
 		if col >= 5 {
 			col = 0

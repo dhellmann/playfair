@@ -35,12 +35,11 @@ var matrixCmd = &cobra.Command{
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		fmt.Printf("Generating the matrix for %q\n", args[0])
 		m, err := cipher.NewMatrix(args[0])
 		if err != nil {
 			return errors.Wrap(err, "failed to create matrix")
 		}
-		fmt.Printf("%v\n", m)
+		fmt.Printf("%s\n", m)
 		return nil
 	},
 }
