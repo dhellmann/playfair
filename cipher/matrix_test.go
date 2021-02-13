@@ -71,6 +71,11 @@ func TestMatrixEncode(t *testing.T) {
 			Input:    "Hide the gold in the tree stump",
 			Expected: "bmodzbxdnabekudmuixmmouvif",
 		},
+		{
+			Keyword:  "monarchy",
+			Input:    "instruments",
+			Expected: "gatlmzclrqxa",
+		},
 	} {
 		t.Run(tc.Keyword, func(t *testing.T) {
 			m, err := NewMatrix(tc.Keyword)

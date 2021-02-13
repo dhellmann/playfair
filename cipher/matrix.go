@@ -126,6 +126,7 @@ func (m *Matrix) Encode(plainText string) (string, error) {
 		}
 		encodedA := m.content[newLocA.row][newLocA.col]
 		encodedB := m.content[newLocB.row][newLocB.col]
+		//fmt.Printf("%c%c -> %c%c (%v -> %v) (%v -> %v)\n", pair[0], pair[1], encodedA, encodedB, locA, newLocA, locB, newLocB)
 		result = result + string(encodedA) + string(encodedB)
 	}
 
