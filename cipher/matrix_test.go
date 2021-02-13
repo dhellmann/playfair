@@ -59,3 +59,98 @@ func TestCreateMatrixNonASCII(t *testing.T) {
 		})
 	}
 }
+
+func TestMatrixEncode(t *testing.T) {
+	for _, tc := range []struct {
+		Keyword  string
+		Input    string
+		Expected string
+	}{
+		{
+			Keyword:  "playfairexample",
+			Input:    "Hide the gold in the tree stump",
+			Expected: "bmodzbxdnabekudmuixmmouvif",
+		},
+	} {
+		t.Run(tc.Keyword, func(t *testing.T) {
+			m, err := NewMatrix(tc.Keyword)
+			assert.Nil(t, err)
+			actual, err := m.Encode(tc.Input)
+			assert.Nil(t, err)
+			assert.Equal(t, tc.Expected, actual)
+		})
+	}
+}
+
+func TestMatrixEncodeError(t *testing.T) {
+	for _, tc := range []string{
+		"",
+		" ",
+		"\n",
+	} {
+		t.Run(tc, func(t *testing.T) {
+			m, _ := NewMatrix("playfair")
+			_, err := m.Encode(tc)
+			assert.Error(t, err)
+		})
+	}
+}
+
+func TestNextValidRune(t *testing.T) {
+	for _, tc := range []struct {
+		Input    string
+		Expected rune
+		Consumed int
+	}{
+		{
+			Input:    "abc",
+			Expected: 'a',
+			Consumed: 1,
+		},
+		{
+			Input:    " abc",
+			Expected: 'a',
+			Consumed: 2,
+		},
+		{
+			Input:    "",
+			Expected: ' ',
+			Consumed: 0,
+		},
+	} {
+		t.Run(tc.Input, func(t *testing.T) {
+			r, c := nextValidRune(tc.Input)
+			assert.Equal(t, tc.Expected, r)
+			assert.Equal(t, tc.Consumed, c)
+		})
+	}
+}
+
+func TestRunePairs(t *testing.T) {
+	for _, tc := range []struct {
+		Input    string
+		Expected [][]rune
+	}{
+		{
+			Input:    "a",
+			Expected: [][]rune{{'a', 'x'}},
+		},
+		{
+			Input:    "abc",
+			Expected: [][]rune{{'a', 'b'}, {'c', 'x'}},
+		},
+		{
+			Input:    " abc",
+			Expected: [][]rune{{'a', 'b'}, {'c', 'x'}},
+		},
+		{
+			Input:    "aabc",
+			Expected: [][]rune{{'a', 'x'}, {'a', 'b'}, {'c', 'x'}},
+		},
+	} {
+		t.Run(tc.Input, func(t *testing.T) {
+			pairs := runePairs(tc.Input)
+			assert.Equal(t, tc.Expected, pairs)
+		})
+	}
+}
