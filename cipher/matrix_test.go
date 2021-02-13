@@ -46,3 +46,16 @@ u v w x z
 		})
 	}
 }
+
+func TestCreateMatrixNonASCII(t *testing.T) {
+	for _, candidate := range []string{
+		"with a space",
+		"with-punctuation",
+		"withumlaüt",
+	} {
+		t.Run(candidate, func(t *testing.T) {
+			_, err := NewMatrix(candidate)
+			assert.Error(t, err)
+		})
+	}
+}
