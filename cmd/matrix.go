@@ -16,10 +16,12 @@ limitations under the License.
 package cmd
 
 import (
-	"errors"
 	"fmt"
 
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+
+	"github.com/dhellmann/playfair/cipher"
 )
 
 // matrixCmd represents the matrix command
@@ -34,6 +36,11 @@ var matrixCmd = &cobra.Command{
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		fmt.Printf("Generating the matrix for %q\n", args[0])
+		m, err := cipher.NewMatrix(args[0])
+		if err != nil {
+			return errors.Wrap(err, "failed to create matrix")
+		}
+		fmt.Printf("%v\n", m)
 		return nil
 	},
 }
