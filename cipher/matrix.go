@@ -25,6 +25,7 @@ const alphabet = "abcdefghiklmnopqrstuvwxyz"
 const minKeywordLen = 6
 
 func NewMatrix(keyword string) (*Matrix, error) {
+	keyword = strings.ToLower(keyword)
 	m := &Matrix{
 		keyword: keyword,
 	}
