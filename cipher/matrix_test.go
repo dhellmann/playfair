@@ -87,6 +87,33 @@ func TestMatrixEncode(t *testing.T) {
 	}
 }
 
+func TestMatrixDecode(t *testing.T) {
+	for _, tc := range []struct {
+		Keyword  string
+		Input    string
+		Expected string
+	}{
+		{
+			Keyword:  "playfairexample",
+			Input:    "bmodzbxdnabekudmuixmmouvif",
+			Expected: "hidethegoldinthetrexestump",
+		},
+		{
+			Keyword:  "monarchy",
+			Input:    "gatlmzclrqxa",
+			Expected: "instrumentsx",
+		},
+	} {
+		t.Run(tc.Keyword, func(t *testing.T) {
+			m, err := NewMatrix(tc.Keyword)
+			assert.Nil(t, err)
+			actual, err := m.Decode(tc.Input)
+			assert.Nil(t, err)
+			assert.Equal(t, tc.Expected, actual)
+		})
+	}
+}
+
 func TestMatrixEncodeError(t *testing.T) {
 	for _, tc := range []string{
 		"",

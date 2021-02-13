@@ -137,6 +137,54 @@ func next(i int) int {
 	return (i + 1) % 5
 }
 
+func prev(i int) int {
+	if i == 0 {
+		return 4
+	}
+	return i - 1
+}
+
+// Decode translates the encrypted argument to plain text.
+func (m *Matrix) Decode(cypherText string) (string, error) {
+	pairs := runePairs(cypherText)
+
+	if len(pairs) == 0 {
+		return "", errors.New("found no encodable characters in input")
+	}
+
+	result := ""
+
+	for _, pair := range pairs {
+		var newLocA, newLocB location
+
+		locA := m.locations[pair[0]]
+		locB := m.locations[pair[1]]
+
+		newLocA = locA
+		newLocB = locB
+
+		if locA.col == locB.col {
+			// same column, take the next item up, wrapping at the top
+			newLocA.row = prev(locA.row)
+			newLocB.row = prev(locB.row)
+		} else if locA.row == locB.row {
+			// same row, take the item to the left, wrapping at the beginning
+			newLocA.col = prev(locA.col)
+			newLocB.col = prev(locB.col)
+		} else {
+			// take alternate corners of the rectangle
+			newLocA.col = locB.col
+			newLocB.col = locA.col
+		}
+		decodedA := m.content[newLocA.row][newLocA.col]
+		decodedB := m.content[newLocB.row][newLocB.col]
+		//fmt.Printf("%c%c -> %c%c (%v -> %v) (%v -> %v)\n", pair[0], pair[1], decodedA, decodedB, locA, newLocA, locB, newLocB)
+		result = result + string(decodedA) + string(decodedB)
+	}
+
+	return result, nil
+}
+
 // NewMatrix creates a Matrix using the given keyword, or returns an error if the word cannot be used to create a matrix.
 func NewMatrix(keyword string) (*Matrix, error) {
 	keyword = strings.ToLower(keyword)
