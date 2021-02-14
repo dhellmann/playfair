@@ -39,7 +39,7 @@ var matrixCmd = &cobra.Command{
 		if err != nil {
 			return errors.Wrap(err, "failed to create matrix")
 		}
-		fmt.Printf("%s\n", m)
+		fmt.Printf("%s\n", m.Matrix())
 		return nil
 	},
 }
