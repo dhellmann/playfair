@@ -154,7 +154,7 @@ func (m *Matrix) Decode(cypherText string) (string, error) {
 	pairs := runePairs(cypherText)
 
 	if len(pairs) == 0 {
-		return "", errors.New("found no encodable characters in input")
+		return "", errors.New("found no decodable characters in input")
 	}
 
 	result := ""
