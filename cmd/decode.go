@@ -29,7 +29,7 @@ var decodeCmd = &cobra.Command{
 	Short: "Decode an input string",
 	Long:  ``,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		m, err := cipher.NewMatrix(args[0])
+		m, err := cipher.New(args[0])
 		if err != nil {
 			return errors.Wrap(err, "failed to create matrix")
 		}

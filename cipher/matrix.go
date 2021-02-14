@@ -16,15 +16,15 @@ type location struct {
 	col int
 }
 
-// Matrix is an encryption/decryption tool
-type Matrix struct {
+// Cipher is an encryption/decryption tool
+type Cipher struct {
 	keyword   string
 	content   [5][5]rune
 	locations map[rune]location
 }
 
-// String returns the string representation of the matrix
-func (m *Matrix) String() string {
+// Matrix returns the string representation of the cipher matrix
+func (m *Cipher) Matrix() string {
 	s := ""
 	for row := 0; row < 5; row++ {
 		for col := 0; col < 5; col++ {
@@ -99,7 +99,7 @@ func runePairs(input string) [][]rune {
 
 type moveFunc func(int) int
 
-func (m *Matrix) translate(inputText string, move moveFunc) (string, error) {
+func (m *Cipher) translate(inputText string, move moveFunc) (string, error) {
 	pairs := runePairs(inputText)
 
 	if len(pairs) == 0 {
@@ -138,7 +138,7 @@ func (m *Matrix) translate(inputText string, move moveFunc) (string, error) {
 }
 
 // Encode translates the plain text argument to encrypted text.
-func (m *Matrix) Encode(plainText string) (string, error) {
+func (m *Cipher) Encode(plainText string) (string, error) {
 	results, err := m.translate(plainText, next)
 	if err != nil {
 		return "", errors.Wrap(err, "failed to encode")
@@ -158,19 +158,19 @@ func prev(i int) int {
 }
 
 // Decode translates the encrypted argument to plain text.
-func (m *Matrix) Decode(cypherText string) (string, error) {
-	results, err := m.translate(cypherText, prev)
+func (m *Cipher) Decode(cipherText string) (string, error) {
+	results, err := m.translate(cipherText, prev)
 	if err != nil {
 		return "", errors.Wrap(err, "failed to decode")
 	}
 	return results, nil
 }
 
-// NewMatrix creates a Matrix using the given keyword, or returns an
+// New creates a Cipher using the given keyword, or returns an
 // error if the word cannot be used to create a matrix.
-func NewMatrix(keyword string) (*Matrix, error) {
+func New(keyword string) (*Cipher, error) {
 	keyword = strings.ToLower(keyword)
-	m := &Matrix{
+	m := &Cipher{
 		keyword:   keyword,
 		locations: map[rune]location{},
 	}

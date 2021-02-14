@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCreateMatrix(t *testing.T) {
+func TestMatrix(t *testing.T) {
 	for _, tc := range []struct {
 		Keyword  string
 		Expected string
@@ -49,14 +49,14 @@ u v w x z
 		},
 	} {
 		t.Run(tc.Keyword, func(t *testing.T) {
-			m, _ := NewMatrix(tc.Keyword)
-			s := m.String()
+			m, _ := New(tc.Keyword)
+			s := m.Matrix()
 			assert.Equal(t, tc.Expected, s)
 		})
 	}
 }
 
-func TestCreateMatrixNonASCII(t *testing.T) {
+func TestNewNonASCII(t *testing.T) {
 	for _, candidate := range []string{
 		"with a space",
 		"with-punctuation",
@@ -64,13 +64,13 @@ func TestCreateMatrixNonASCII(t *testing.T) {
 		"short",
 	} {
 		t.Run(candidate, func(t *testing.T) {
-			_, err := NewMatrix(candidate)
+			_, err := New(candidate)
 			assert.Error(t, err)
 		})
 	}
 }
 
-func TestMatrixEncode(t *testing.T) {
+func TestEncode(t *testing.T) {
 	for _, tc := range []struct {
 		Keyword  string
 		Input    string
@@ -88,7 +88,7 @@ func TestMatrixEncode(t *testing.T) {
 		},
 	} {
 		t.Run(tc.Keyword, func(t *testing.T) {
-			m, err := NewMatrix(tc.Keyword)
+			m, err := New(tc.Keyword)
 			assert.Nil(t, err)
 			actual, err := m.Encode(tc.Input)
 			assert.Nil(t, err)
@@ -97,21 +97,21 @@ func TestMatrixEncode(t *testing.T) {
 	}
 }
 
-func TestMatrixEncodeError(t *testing.T) {
+func TestEncodeError(t *testing.T) {
 	for _, tc := range []string{
 		"",
 		" ",
 		"\n",
 	} {
 		t.Run(tc, func(t *testing.T) {
-			m, _ := NewMatrix("playfair")
+			m, _ := New("playfair")
 			_, err := m.Encode(tc)
 			assert.Error(t, err)
 		})
 	}
 }
 
-func TestMatrixDecode(t *testing.T) {
+func TestDecode(t *testing.T) {
 	for _, tc := range []struct {
 		Keyword  string
 		Input    string
@@ -134,7 +134,7 @@ func TestMatrixDecode(t *testing.T) {
 		},
 	} {
 		t.Run(tc.Keyword, func(t *testing.T) {
-			m, err := NewMatrix(tc.Keyword)
+			m, err := New(tc.Keyword)
 			assert.Nil(t, err)
 			actual, err := m.Decode(tc.Input)
 			assert.Nil(t, err)
@@ -143,14 +143,14 @@ func TestMatrixDecode(t *testing.T) {
 	}
 }
 
-func TestMatrixDecodeError(t *testing.T) {
+func TestDecodeError(t *testing.T) {
 	for _, tc := range []string{
 		"",
 		" ",
 		"\n",
 	} {
 		t.Run(tc, func(t *testing.T) {
-			m, _ := NewMatrix("playfair")
+			m, _ := New("playfair")
 			_, err := m.Decode(tc)
 			assert.Error(t, err)
 		})
