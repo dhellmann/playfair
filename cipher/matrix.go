@@ -1,10 +1,11 @@
 package cipher
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/pkg/errors"
 )
 
 const alphabet = "abcdefghiklmnopqrstuvwxyz"
@@ -96,12 +97,13 @@ func runePairs(input string) [][]rune {
 	return result
 }
 
-// Encode translates the plain text argument to encrypted text.
-func (m *Matrix) Encode(plainText string) (string, error) {
-	pairs := runePairs(plainText)
+type moveFunc func(int) int
+
+func (m *Matrix) translate(inputText string, move moveFunc) (string, error) {
+	pairs := runePairs(inputText)
 
 	if len(pairs) == 0 {
-		return "", errors.New("found no encodable characters in input")
+		return "", errors.New("found no translatable characters in input")
 	}
 
 	result := ""
@@ -116,26 +118,32 @@ func (m *Matrix) Encode(plainText string) (string, error) {
 		newLocB = locB
 
 		if locA.col == locB.col {
-			// same column, take the next item down, wrapping at the bottom
-			newLocA.row = next(locA.row)
-			newLocB.row = next(locB.row)
+			newLocA.row = move(locA.row)
+			newLocB.row = move(locB.row)
 		} else if locA.row == locB.row {
-			// same row, take the next item to the right, wrapping at the end
-			newLocA.col = next(locA.col)
-			newLocB.col = next(locB.col)
+			newLocA.col = move(locA.col)
+			newLocB.col = move(locB.col)
 		} else {
-			// take alternate corners of the rectangle
 			newLocA.col = locB.col
 			newLocB.col = locA.col
 		}
-		encodedA := m.content[newLocA.row][newLocA.col]
-		encodedB := m.content[newLocB.row][newLocB.col]
+		newA := m.content[newLocA.row][newLocA.col]
+		newB := m.content[newLocB.row][newLocB.col]
 		// fmt.Printf("%c%c -> %c%c (%v -> %v) (%v -> %v)\n",
-		// 	pair[0], pair[1], encodedA, encodedB, locA, newLocA, locB, newLocB)
-		result = result + string(encodedA) + string(encodedB)
+		// 	pair[0], pair[1], newA, newB, locA, newLocA, locB, newLocB)
+		result = result + string(newA) + string(newB)
 	}
 
 	return result, nil
+}
+
+// Encode translates the plain text argument to encrypted text.
+func (m *Matrix) Encode(plainText string) (string, error) {
+	results, err := m.translate(plainText, next)
+	if err != nil {
+		return "", errors.Wrap(err, "failed to encode")
+	}
+	return results, nil
 }
 
 func next(i int) int {
@@ -151,44 +159,11 @@ func prev(i int) int {
 
 // Decode translates the encrypted argument to plain text.
 func (m *Matrix) Decode(cypherText string) (string, error) {
-	pairs := runePairs(cypherText)
-
-	if len(pairs) == 0 {
-		return "", errors.New("found no decodable characters in input")
+	results, err := m.translate(cypherText, prev)
+	if err != nil {
+		return "", errors.Wrap(err, "failed to decode")
 	}
-
-	result := ""
-
-	for _, pair := range pairs {
-		var newLocA, newLocB location
-
-		locA := m.locations[pair[0]]
-		locB := m.locations[pair[1]]
-
-		newLocA = locA
-		newLocB = locB
-
-		if locA.col == locB.col {
-			// same column, take the next item up, wrapping at the top
-			newLocA.row = prev(locA.row)
-			newLocB.row = prev(locB.row)
-		} else if locA.row == locB.row {
-			// same row, take the item to the left, wrapping at the beginning
-			newLocA.col = prev(locA.col)
-			newLocB.col = prev(locB.col)
-		} else {
-			// take alternate corners of the rectangle
-			newLocA.col = locB.col
-			newLocB.col = locA.col
-		}
-		decodedA := m.content[newLocA.row][newLocA.col]
-		decodedB := m.content[newLocB.row][newLocB.col]
-		// fmt.Printf("%c%c -> %c%c (%v -> %v) (%v -> %v)\n",
-		// 	pair[0], pair[1], decodedA, decodedB, locA, newLocA, locB, newLocB)
-		result = result + string(decodedA) + string(decodedB)
-	}
-
-	return result, nil
+	return results, nil
 }
 
 // NewMatrix creates a Matrix using the given keyword, or returns an
