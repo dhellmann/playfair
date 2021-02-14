@@ -21,6 +21,15 @@ t u v w z
 `,
 		},
 		{
+			Keyword: "playfajrexample",
+			Expected: `p l a y f 
+i r e x m 
+b c d g h 
+k n o q s 
+t u v w z 
+`,
+		},
+		{
 			Keyword: "monarchy",
 			Expected: `m o n a r 
 c h y b d 
@@ -52,6 +61,7 @@ func TestCreateMatrixNonASCII(t *testing.T) {
 		"with a space",
 		"with-punctuation",
 		"withumlaüt",
+		"short",
 	} {
 		t.Run(candidate, func(t *testing.T) {
 			_, err := NewMatrix(candidate)
@@ -87,6 +97,20 @@ func TestMatrixEncode(t *testing.T) {
 	}
 }
 
+func TestMatrixEncodeError(t *testing.T) {
+	for _, tc := range []string{
+		"",
+		" ",
+		"\n",
+	} {
+		t.Run(tc, func(t *testing.T) {
+			m, _ := NewMatrix("playfair")
+			_, err := m.Encode(tc)
+			assert.Error(t, err)
+		})
+	}
+}
+
 func TestMatrixDecode(t *testing.T) {
 	for _, tc := range []struct {
 		Keyword  string
@@ -114,7 +138,7 @@ func TestMatrixDecode(t *testing.T) {
 	}
 }
 
-func TestMatrixEncodeError(t *testing.T) {
+func TestMatrixDecodeError(t *testing.T) {
 	for _, tc := range []string{
 		"",
 		" ",
@@ -122,7 +146,7 @@ func TestMatrixEncodeError(t *testing.T) {
 	} {
 		t.Run(tc, func(t *testing.T) {
 			m, _ := NewMatrix("playfair")
-			_, err := m.Encode(tc)
+			_, err := m.Decode(tc)
 			assert.Error(t, err)
 		})
 	}
@@ -149,6 +173,11 @@ func TestNextValidRune(t *testing.T) {
 			Expected: ' ',
 			Consumed: 0,
 		},
+		{
+			Input:    "j",
+			Expected: 'i',
+			Consumed: 1,
+		},
 	} {
 		t.Run(tc.Input, func(t *testing.T) {
 			r, c := nextValidRune(tc.Input)
@@ -165,6 +194,10 @@ func TestRunePairs(t *testing.T) {
 	}{
 		{
 			Input:    "a",
+			Expected: [][]rune{{'a', 'x'}},
+		},
+		{
+			Input:    "a-",
 			Expected: [][]rune{{'a', 'x'}},
 		},
 		{
