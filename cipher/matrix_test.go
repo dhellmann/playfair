@@ -123,6 +123,11 @@ func TestMatrixDecode(t *testing.T) {
 			Expected: "hidethegoldinthetrexestump",
 		},
 		{
+			Keyword:  "playfairexample",
+			Input:    "bm od zb xd na be ku dm ui xm mo uv if",
+			Expected: "hidethegoldinthetrexestump",
+		},
+		{
 			Keyword:  "monarchy",
 			Input:    "gatlmzclrqxa",
 			Expected: "instrumentsx",
