@@ -34,7 +34,10 @@ func (m *Matrix) String() string {
 	return s
 }
 
-// nextValidRune starts at the beginning of the string and finds 1 rune that is in the alphabet. If the rune is 'j' it is replaced with 'i'. If the input contains no valid runes, a space is returned.
+// nextValidRune starts at the beginning of the string and finds 1
+// rune that is in the alphabet. If the rune is 'j' it is replaced
+// with 'i'. If the input contains no valid runes, a space is
+// returned.
 func nextValidRune(input string) (rune, int) {
 	var r rune
 	var size int
@@ -55,7 +58,8 @@ func nextValidRune(input string) (rune, int) {
 	return r, consumed
 }
 
-// runePairs returns a slice of slices of 2 runes for encodable characters from the alphabet
+// runePairs returns a slice of slices of 2 runes for encodable
+// characters from the alphabet
 //
 // If duplicate values are encountered, an 'x' is inserted between them.
 func runePairs(input string) [][]rune {
@@ -126,7 +130,8 @@ func (m *Matrix) Encode(plainText string) (string, error) {
 		}
 		encodedA := m.content[newLocA.row][newLocA.col]
 		encodedB := m.content[newLocB.row][newLocB.col]
-		//fmt.Printf("%c%c -> %c%c (%v -> %v) (%v -> %v)\n", pair[0], pair[1], encodedA, encodedB, locA, newLocA, locB, newLocB)
+		// fmt.Printf("%c%c -> %c%c (%v -> %v) (%v -> %v)\n",
+		// 	pair[0], pair[1], encodedA, encodedB, locA, newLocA, locB, newLocB)
 		result = result + string(encodedA) + string(encodedB)
 	}
 
@@ -178,14 +183,16 @@ func (m *Matrix) Decode(cypherText string) (string, error) {
 		}
 		decodedA := m.content[newLocA.row][newLocA.col]
 		decodedB := m.content[newLocB.row][newLocB.col]
-		//fmt.Printf("%c%c -> %c%c (%v -> %v) (%v -> %v)\n", pair[0], pair[1], decodedA, decodedB, locA, newLocA, locB, newLocB)
+		// fmt.Printf("%c%c -> %c%c (%v -> %v) (%v -> %v)\n",
+		// 	pair[0], pair[1], decodedA, decodedB, locA, newLocA, locB, newLocB)
 		result = result + string(decodedA) + string(decodedB)
 	}
 
 	return result, nil
 }
 
-// NewMatrix creates a Matrix using the given keyword, or returns an error if the word cannot be used to create a matrix.
+// NewMatrix creates a Matrix using the given keyword, or returns an
+// error if the word cannot be used to create a matrix.
 func NewMatrix(keyword string) (*Matrix, error) {
 	keyword = strings.ToLower(keyword)
 	m := &Matrix{
